@@ -1,3 +1,3 @@
-# burrow
+# Burrow
  
 Burrow is a versatile Java framework designed for creating pixel-perfect, efficient and easily customizable interfaces. It provides a lightweight, cross-platform environment, ensuring pixel-perfect rendering across all Java-compatible devices. With Burrow, you have the flexibility to create a wide range of applications, from games to specialized tools and custom widgets. The framework handles low-level tasks such as layout, painting, caching, and event propagation, allowing you to focus on a consistent UI experience without getting bogged down in low-level details. Furthermore, its open-source nature encourages collaboration and customization, empowering you to build interactive experiences tailored to your specific needs without starting from square one.
