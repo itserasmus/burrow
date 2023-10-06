@@ -1,6 +1,7 @@
 package com.burrow.widget.no_child;
 
 import com.burrow.auxiliary.BoxFrame;
+import com.burrow.auxiliary.InitData;
 import com.burrow.auxiliary.LayoutData;
 import com.burrow.auxiliary.PaintData;
 import com.burrow.auxiliary.TreeData;
@@ -32,23 +33,25 @@ public final class RectangleWidget extends Widget {
 
     @Override
     public void layout(LayoutData data) {
-        canvas.requestRepaint();
+        if(aux.wasResizedMax(data, frame)) {
+            canvas.requestRepaint();
+        }
         frame.setSize(data.maxWidth, data.maxHeight);
     }
 
     @Override
     public void paint(PaintData data) {
         data.canvas.addStroke(new RectangleStroke(
-            (int)state.x,
-            (int)state.y,
-            (int)state.width,
-            (int)state.height,
-            (int)(Math.random()* 0xFFFFFF) + 0xFF000000
+            (int)data.x,
+            (int)data.y,
+            (int)data.width,
+            (int)data.height,
+            state.color
         ));
     }
 
     @Override
-    public void init(TreeData data) {
+    public void init(InitData data) {
         canvas = data.canvas;
         frame = new BoxFrame();
     }
@@ -62,17 +65,12 @@ public final class RectangleWidget extends Widget {
     public void dispose() {}
 
 
-    public RectangleWidget(double x, double y, double width, double height, int color) {
-        state.x = x;
-        state.y = y;
-        state.width = width;
-        state.height = height;
+    public RectangleWidget(int color) {
         state.color = color;
     }
     
 
     public class RectangleWidgetState extends State<RectangleWidget> {
-        public double x, y, width, height;
         public int color;
 
         public RectangleWidgetState(RectangleWidget widget) {

@@ -4,8 +4,10 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 
 import com.burrow.auxiliary.BoxFrame;
+import com.burrow.auxiliary.InitData;
 import com.burrow.auxiliary.LayoutData;
 import com.burrow.auxiliary.PaintData;
+import com.burrow.auxiliary.ScreenData;
 import com.burrow.auxiliary.TreeData;
 import com.burrow.base.BPanel;
 import com.burrow.widget.State;
@@ -79,7 +81,7 @@ public final class BasicRootWidget extends RootWidget {
     public void onRelocate(TreeData data) {}
 
     @Override
-    public void init(BPanel panel) {
+    public void init(BPanel panel, ScreenData screen) {
         this.panel = panel;
 
         panel.setSize((int)frame.width, (int)frame.height);
@@ -89,7 +91,7 @@ public final class BasicRootWidget extends RootWidget {
         state.strokes = new ArrayList<BStroke>();
         frame = new BoxFrame();
 
-        child.init(new TreeData(this));
+        child.init(new InitData(this, screen));
         
         state.cArr = new int[(int)frame.width][(int)frame.height];
     }

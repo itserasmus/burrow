@@ -1,12 +1,14 @@
 package com.burrow.base;
 
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import com.burrow.auxiliary.ScreenData;
 import com.burrow.widget.root.RootWidget;
 
 public class BPanel extends JPanel implements Runnable {
@@ -15,7 +17,7 @@ public class BPanel extends JPanel implements Runnable {
 
     protected Thread frameThread;
     protected long lastFrame;
-    public int fps = 1;
+    public int fps = 10;
 
     protected boolean paintLock = true;
 
@@ -26,7 +28,17 @@ public class BPanel extends JPanel implements Runnable {
         this.frame = frame;
         this.root = root;
 
-        root.init(this);
+        root.init(
+            this,
+            new ScreenData(
+                GraphicsEnvironment
+                    .getLocalGraphicsEnvironment()
+                    .getDefaultScreenDevice()
+                    .getDefaultConfiguration()
+                    .getDefaultTransform()
+                    .getScaleX()
+            )
+        );
         
         addComponentListener(new ComponentAdapter() {  
             public void componentResized(ComponentEvent evt) {

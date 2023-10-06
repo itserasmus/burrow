@@ -3,6 +3,7 @@ package com.burrow.widget.single_child.canvas;
 import java.util.ArrayList;
 
 import com.burrow.auxiliary.BoxFrame;
+import com.burrow.auxiliary.InitData;
 import com.burrow.auxiliary.LayoutData;
 import com.burrow.auxiliary.PaintData;
 import com.burrow.auxiliary.TreeData;
@@ -13,6 +14,7 @@ import com.burrow.widget.single_child.canvas.stroke.BStroke;
 
 @SuppressWarnings("rawtypes")
 public class CanvasWidget extends SingleChildWidget implements BStroke {
+    protected double dpr;
     protected BoxFrame frame;
     protected CanvasState state;
 
@@ -60,10 +62,12 @@ public class CanvasWidget extends SingleChildWidget implements BStroke {
         this.state = new CanvasState(this);
     }
     @Override
-    public void init(TreeData data) {
+    public void init(InitData data) {
         state.strokes = new ArrayList<BStroke>();
         frame = new BoxFrame();
         parentCanvas = data.canvas;
+
+        dpr = data.screen.dpr; 
 
         child.init(data.push(this).setCanvas(this));
         state.cArr = new int[data.root.panel.getWidth()][data.root.panel.getHeight()];
@@ -101,11 +105,11 @@ public class CanvasWidget extends SingleChildWidget implements BStroke {
         }
     }
     @Override
-    public int pixelColor(int x, int y) {
-        return state.cArr[x][y];
+    public int pixelColor(double x, double y) {
+        return state.cArr[(int)(x*dpr)][(int)(y*dpr)];
     }
     @Override
-    public int[] getHitbox() {
+    public double[] getHitbox() {
         return null;
     }
 

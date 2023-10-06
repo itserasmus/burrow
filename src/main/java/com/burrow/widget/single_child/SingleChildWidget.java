@@ -1,5 +1,6 @@
 package com.burrow.widget.single_child;
 
+import com.burrow.auxiliary.InitData;
 import com.burrow.auxiliary.LayoutData;
 import com.burrow.auxiliary.PaintData;
 import com.burrow.auxiliary.TreeData;
@@ -17,7 +18,7 @@ public abstract class SingleChildWidget extends Widget {
         child.paint(data.set(child.getBoxFrame()));
     }
     @Override
-    public void init(TreeData data) {
+    public void init(InitData data) {
         child.init(data.push(this));
     }
     @Override
