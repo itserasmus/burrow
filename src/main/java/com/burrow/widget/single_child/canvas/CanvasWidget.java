@@ -1,5 +1,7 @@
 package com.burrow.widget.single_child.canvas;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import com.burrow.auxiliary.BoxFrame;
@@ -7,15 +9,16 @@ import com.burrow.auxiliary.InitData;
 import com.burrow.auxiliary.LayoutData;
 import com.burrow.auxiliary.PaintData;
 import com.burrow.auxiliary.TreeData;
+import com.burrow.base.BPanel;
 import com.burrow.widget.State;
 import com.burrow.widget.Widget;
 import com.burrow.widget.single_child.SingleChildWidget;
+import com.burrow.widget.single_child.canvas.stroke.BRenderFilter;
 import com.burrow.widget.single_child.canvas.stroke.BStroke;
 
 @SuppressWarnings("rawtypes")
 public class CanvasWidget extends SingleChildWidget implements BStroke {
     protected double dpr;
-    protected BoxFrame frame;
     protected CanvasState state;
 
     protected CanvasWidget parentCanvas;
@@ -27,15 +30,15 @@ public class CanvasWidget extends SingleChildWidget implements BStroke {
 
     @Override
     public void layout(LayoutData data) {
-        frame.setSize(data.maxWidth, data.maxHeight);
+        state.frame.setSize(data.maxWidth, data.maxHeight);
         child.layout(data);
 
         if(
-            (state.cArr.length == 0 && data.windowWidth != 0) ||
-            state.cArr.length != data.windowWidth ||
-            state.cArr[0].length != data.windowHeight
+            (state.image.getWidth() == 0 && data.windowWidth != 0) ||
+            state.image.getWidth() != data.windowWidth ||
+            state.image.getHeight() != data.windowHeight
         ) {
-            state.cArr = new int[data.windowWidth][data.windowHeight];
+            state.image = new BufferedImage(Math.max(1, data.windowWidth), Math.max(1, data.windowHeight), BufferedImage.TYPE_INT_ARGB);
             resetCache();
         }
     }
@@ -45,32 +48,39 @@ public class CanvasWidget extends SingleChildWidget implements BStroke {
         if(needsRepaint) {
             needsRepaint = false;
             state.strokes.clear();
-            child.paint(data.set(child.getBoxFrame()));
+            child.paint(data.set(child.getBoxFrame()).setCanvas(this));
+            data.setCanvas(parentCanvas);
         }
     }
 
     @Override
     public BoxFrame getBoxFrame() {
-        return frame;
+        return state.frame;
     }
     @Override
     public State getState() {
         return state;
     }
     @Override
+    public void createBoxFrame() {
+        state.frame = new BoxFrame();
+    }
+    @Override
     public void createState() {
         this.state = new CanvasState(this);
     }
+    
     @Override
     public void init(InitData data) {
         state.strokes = new ArrayList<BStroke>();
-        frame = new BoxFrame();
         parentCanvas = data.canvas;
 
         dpr = data.screen.dpr; 
 
         child.init(data.push(this).setCanvas(this));
-        state.cArr = new int[data.root.panel.getWidth()][data.root.panel.getHeight()];
+        data.pop().setCanvas(parentCanvas);
+
+        state.image = new BufferedImage(Math.max(1, data.root.panel.getWidth()), Math.max(1, data.root.panel.getHeight()), BufferedImage.TYPE_INT_ARGB);
     }
 
     @Override
@@ -78,39 +88,104 @@ public class CanvasWidget extends SingleChildWidget implements BStroke {
         parentCanvas = data.canvas;
 
         child.onRelocate(data.push(this).setCanvas(this));
+        data.pop().setCanvas(parentCanvas);
+    }
+    
+    @Override
+    public int pixelColor(double x, double y, BRenderFilter filter) {
+        int color = 0x00000000;
+        for(int i = state.strokes.size() - 1; i > -1; i--) {
+            if(state.strokes.get(i).drawStroke(x, y, filter.getCropBounds())) {
+                color = state.strokes.get(i).pixelColor(x, y, filter);
+                if(color >>> 24 == 0xFF) { // TODO: deal with this later
+                    return color;
+                }
+            }
+        }
+        return color;
+    }
+    public int pixelColor(double x, double y, BPanel panel, double width, double height) {
+        BRenderFilter filter = new BRenderFilter(panel, new double[]{0, 0, width, height});
+        int color = 0x00000000;
+        for(int i = state.strokes.size() - 1; i > -1; i--) {
+            if(state.strokes.get(i).drawStroke(x, y, filter.getCropBounds())) {
+                color = state.strokes.get(i).pixelColor(x, y, filter);
+                if(color >>> 24 == 0xFF) { // TODO: deal with this later
+                    return color;
+                }
+            }
+        }
+        return color;
     }
 
+    // @Override
+    // public void rasterizeToCArr(int[][] cArr, BRenderFilter filter) {
+    //     if(remainingRepaintsUntilCache > 0) {
+    //         for(int i = state.strokes.size() - 1; i >= 0; i--) {
+    //             state.strokes.get(i).rasterizeToCArr(cArr, filter);
+    //         }
+    //         remainingRepaintsUntilCache--;
+    //         return;
+    //     }
+    //     if(remainingRepaintsUntilCache == 0) {
+    //         for(int i = state.strokes.size() - 1; i >= 0; i--) {
+    //             state.strokes.get(i).rasterizeToCArr(state.cArr, filter);
+    //         }
+    //         remainingRepaintsUntilCache--;
+    //     }
+    //     final int width = Math.min(state.cArr.length, cArr.length);
+    //     if(width == 0) {return;}
+    //     final int height = Math.min(state.cArr[0].length, cArr[0].length);
+    //     for(int i = 0; i < width; i++) {
+    //         for(int j = 0; j < height; j++) {
+    //             cArr[i][j] = state.cArr[i][j];
+    //         }
+    //     }
+    // }
+
     @Override
-    public void rasterizeToCArr(int[][] cArr) {
+    public void rasterizeToBufferedImage(BufferedImage image, BRenderFilter filter) {
         if(remainingRepaintsUntilCache > 0) {
             for(int i = state.strokes.size() - 1; i >= 0; i--) {
-                state.strokes.get(i).rasterizeToCArr(cArr);
+                state.strokes.get(i).rasterizeToBufferedImage(image, filter);
             }
             remainingRepaintsUntilCache--;
             return;
         }
         if(remainingRepaintsUntilCache == 0) {
             for(int i = state.strokes.size() - 1; i >= 0; i--) {
-                state.strokes.get(i).rasterizeToCArr(state.cArr);
+                state.strokes.get(i).rasterizeToBufferedImage(state.image, filter);
             }
             remainingRepaintsUntilCache--;
         }
-        final int width = Math.min(state.cArr.length, cArr.length);
-        if(width == 0) {return;}
-        final int height = Math.min(state.cArr[0].length, cArr[0].length);
-        for(int i = 0; i < width; i++) {
-            for(int j = 0; j < height; j++) {
-                cArr[i][j] = state.cArr[i][j];
+        for(int i = 0; i < image.getWidth(); i++) {
+            for(int j = 0; j < image.getHeight(); j++) {
+                image.setRGB(i, j, state.image.getRGB(i, j));
             }
         }
     }
+
     @Override
-    public int pixelColor(double x, double y) {
-        return state.cArr[(int)(x*dpr)][(int)(y*dpr)];
+    public void rasterizeToGraphics2D(Graphics2D g, BRenderFilter filter) {
+        if(remainingRepaintsUntilCache > 0) {
+            for(int i = state.strokes.size() - 1; i >= 0; i--) {
+                state.strokes.get(i).rasterizeToGraphics2D(g, filter);
+            }
+            remainingRepaintsUntilCache--;
+            return;
+        }
+        if(remainingRepaintsUntilCache == 0) {
+            for(int i = state.strokes.size() - 1; i >= 0; i--) {
+                state.strokes.get(i).rasterizeToBufferedImage(state.image, filter);
+            }
+            remainingRepaintsUntilCache--;
+        }
+        g.drawImage(state.image, 0, 0, null);
     }
+
     @Override
-    public double[] getHitbox() {
-        return null;
+    public boolean drawStroke(double x, double y, double[] hitbox) {
+        return true;
     }
 
     public void addStroke(BStroke stroke) {
@@ -138,7 +213,8 @@ public class CanvasWidget extends SingleChildWidget implements BStroke {
     }
     
     public class CanvasState extends State<CanvasWidget> {
-        public int[][] cArr;
+        public BoxFrame frame;
+        public BufferedImage image;
         public ArrayList<BStroke> strokes;
 
         public CanvasState(CanvasWidget self) {

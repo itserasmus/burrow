@@ -6,17 +6,15 @@ import com.burrow.auxiliary.LayoutData;
 import com.burrow.auxiliary.PaintData;
 import com.burrow.auxiliary.TreeData;
 import com.burrow.auxiliary.BurrowAux;
-import com.burrow.event_handling.event.BMouseEvent;
-import com.burrow.event_handling.listener.BMouseListener;
 import com.burrow.widget.State;
 import com.burrow.widget.Widget;
 import com.burrow.widget.single_child.canvas.CanvasWidget;
-import com.burrow.widget.single_child.canvas.stroke.RectangleStroke;
+import com.burrow.widget.single_child.canvas.stroke.VerticalGradientStroke;
 
 @SuppressWarnings("rawtypes")
-public final class RectangleWidget extends Widget implements BMouseListener {
+public final class VerticalGradientWidget extends Widget {
     protected CanvasWidget canvas;
-    protected RectangleWidgetState state;
+    protected VerticalGradientWidgetState state;
     
     @Override
     public BoxFrame getBoxFrame() {
@@ -35,7 +33,7 @@ public final class RectangleWidget extends Widget implements BMouseListener {
 
     @Override
     public void createState() {
-        state = new RectangleWidgetState(this);
+        state = new VerticalGradientWidgetState(this);
     }
 
     @Override
@@ -48,12 +46,13 @@ public final class RectangleWidget extends Widget implements BMouseListener {
     
     @Override
     public void paint(PaintData data) {
-        data.canvas.addStroke(new RectangleStroke(
+        data.canvas.addStroke(new VerticalGradientStroke(
             (int)data.x,
             (int)data.y,
             (int)data.width,
             (int)data.height,
-            state.color
+            state.topColor,
+            state.bottomColor
         ));
     }
 
@@ -71,29 +70,18 @@ public final class RectangleWidget extends Widget implements BMouseListener {
     public void dispose() {}
 
 
-    @Override
-    public boolean onMouseDown(BMouseEvent e) {
-        System.out.println("mouse down on " + state.color);
-        return true;
-    }
-
-    @Override
-    public boolean onMouseUp(BMouseEvent e) {
-        System.out.println("mouse down on " + state.color);
-        return true;
-    }
-
-
-    public RectangleWidget(int color) {
-        state.color = color;
+    public VerticalGradientWidget(int topColor, int bottomColor) {
+        state.topColor = topColor;
+        state.bottomColor = bottomColor;
     }
     
 
-    public class RectangleWidgetState extends State<RectangleWidget> {
+    public class VerticalGradientWidgetState extends State<VerticalGradientWidget> {
         public BoxFrame frame;
-        public int color;
+        public int topColor;
+        public int bottomColor;
 
-        public RectangleWidgetState(RectangleWidget widget) {
+        public VerticalGradientWidgetState(VerticalGradientWidget widget) {
             super(widget);
         }
     }

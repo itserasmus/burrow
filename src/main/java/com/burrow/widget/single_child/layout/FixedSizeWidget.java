@@ -1,7 +1,6 @@
 package com.burrow.widget.single_child.layout;
 
 import com.burrow.auxiliary.BoxFrame;
-import com.burrow.auxiliary.InitData;
 import com.burrow.auxiliary.LayoutData;
 import com.burrow.widget.State;
 import com.burrow.widget.Widget;
@@ -9,26 +8,25 @@ import com.burrow.widget.single_child.SingleChildWidget;
 
 @SuppressWarnings("rawtypes")
 public class FixedSizeWidget extends SingleChildWidget {
-    protected BoxFrame frame;
     protected FixedSizeWidgetState state;
 
     @Override
     public void layout(LayoutData data) {
-        frame.setSize(
+        state.frame.setSize(
             Math.min(state.width, data.maxWidth),
             Math.min(state.height, data.maxHeight)
         );
         child.layout(data.set(
-            frame.width,
-            frame.height,
-            frame.width,
-            frame.height
+            state.frame.width,
+            state.frame.height,
+            state.frame.width,
+            state.frame.height
         ));
     }
 
     @Override
     public BoxFrame getBoxFrame() {
-        return frame;
+        return state.frame;
     }
 
     @Override
@@ -37,15 +35,13 @@ public class FixedSizeWidget extends SingleChildWidget {
     }
 
     @Override
-    public void createState() {
-        state = new FixedSizeWidgetState(this);
+    public void createBoxFrame() {
+        state.frame = new BoxFrame();
     }
 
     @Override
-    public void init(InitData data) {
-        frame = new BoxFrame();
-        
-        child.init(data.push(this));
+    public void createState() {
+        state = new FixedSizeWidgetState(this);
     }
     
 
@@ -57,6 +53,7 @@ public class FixedSizeWidget extends SingleChildWidget {
 
 
     public class FixedSizeWidgetState extends State<FixedSizeWidget> {
+        public BoxFrame frame;
         public double width, height;
 
         public FixedSizeWidgetState(FixedSizeWidget widget) {

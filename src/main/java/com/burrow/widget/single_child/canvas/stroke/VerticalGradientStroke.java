@@ -6,49 +6,35 @@ import java.awt.image.BufferedImage;
 
 import com.burrow.auxiliary.BurrowAux;
 
-public final class RectangleStroke implements BStroke {
-    public final int x, y, width, height, color;
+public final class VerticalGradientStroke implements BStroke {
+    public final int x, y, width, height, topColor, bottomColor;
     public final double[] hitbox;
 
     @Override
     public int pixelColor(double x, double y, BRenderFilter filter) {
         if(this.x <= x && this.y <= y && this.x + this.width >= x && this.y + this.height >= y) {
-            return this.color;
+            return BurrowAux.lerpColor(topColor, bottomColor, (y-this.y)/height);
         }
         return 0;
     }
 
-    // @Override
-    // public void rasterizeToCArr(int[][] cArr, BRenderFilter filter) {
-    //     if(cArr.length == 0) {return;}
-    //     final int maxY = Math.min(
-    //         (int)(filter.getCropBounds()[1]+filter.getCropBounds()[3]),
-    //         Math.min(height + y, cArr[0].length)
-    //     );
-    //     final int maxX = Math.min(
-    //         (int)(filter.getCropBounds()[0]+filter.getCropBounds()[2]),
-    //         Math.min(width + x, cArr.length)
-    //     );
-    //     final int startX = Math.max((int)filter.getCropBounds()[0], Math.max(0, x));
-
-    //     for(int i = Math.max((int)filter.getCropBounds()[1], Math.max(0, y)); i < maxY; i++) {
-    //         for(int j = startX; j < maxX; j++) {
-    //             cArr[j][i] = color;
-    //         }
-    //     }
-    // }
-
     @Override
     public boolean drawStroke(double x, double y, double[] hitbox) {
-        return BurrowAux.pointInHitbox(x, y, this.hitbox) && BurrowAux.pointInHitbox(x, y, hitbox);
+        return BurrowAux.pointInHitbox(x, y, this.hitbox) &&
+            BurrowAux.pointInHitbox(x, y, hitbox);
     }
 
-    public RectangleStroke(int x, int y, int width, int height, int color) {
+    public VerticalGradientStroke(
+        int x, int y,
+        int width, int height,
+        int topColor, int bottomColor
+    ) {
         this.x = x;
         this.y = y;
         this.width = width > Integer.MAX_VALUE - x ? Integer.MAX_VALUE - x: width;
         this.height = height > Integer.MAX_VALUE - y ? Integer.MAX_VALUE - y : height;
-        this.color = color;
+        this.topColor = topColor;
+        this.bottomColor = bottomColor;
         this.hitbox = new double[]{x, y, width, height};
     }
 
@@ -74,25 +60,25 @@ public final class RectangleStroke implements BStroke {
 
         for(int i = Math.max((int)filter.getCropBounds()[1], Math.max(0, y)); i < maxY; i++) {
             for(int j = startX; j < maxX; j++) {
-                image.setRGB(j, i, color);
+                image.setRGB(j, i, BurrowAux.lerpColor(topColor, bottomColor, (i-y)*1.0/height));
             }
         }
     }
 
     @Override
     public void rasterizeToGraphics2D(Graphics2D g, BRenderFilter filter) {
-        g.setColor(new Color(color));
-        g.fillRect(
-            Math.max((int)filter.getCropBounds()[0], Math.max(0, x)),
-            Math.max((int)filter.getCropBounds()[1], Math.max(0, y)),
-            Math.min(
-                (int)filter.getCropBounds()[2],
-                width
-            ),
-            Math.min(
-                (int)filter.getCropBounds()[3],
-                height
-            )
+        final int maxWidth = Math.min(
+            (int)filter.getCropBounds()[2],
+            width
         );
+        for(int i = Math.max((int)filter.getCropBounds()[1], Math.max(0, y)); i < Math.min((int)(filter.getCropBounds()[1]+filter.getCropBounds()[3]), height + y); i++) {
+            g.setColor(new Color(BurrowAux.lerpColor(topColor, bottomColor, (i-y)*1.0/height)));
+            g.fillRect(
+                Math.max((int)filter.getCropBounds()[0], Math.max(0, x)),
+                i,
+                maxWidth,
+                1
+            );
+        }
     }
 }

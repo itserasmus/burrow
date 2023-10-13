@@ -5,13 +5,12 @@ import com.burrow.auxiliary.InitData;
 import com.burrow.auxiliary.LayoutData;
 import com.burrow.auxiliary.PaintData;
 import com.burrow.auxiliary.TreeData;
-import com.burrow.auxiliary.WidgetAuxiliaryFunctions;
-
 
 @SuppressWarnings("rawtypes")
-public abstract class Widget {
+public abstract class Widget {  
     public abstract BoxFrame getBoxFrame();
     public abstract State getState();
+    public abstract void createBoxFrame();
     public abstract void createState();
 
     public abstract void layout(LayoutData data);
@@ -24,7 +23,6 @@ public abstract class Widget {
 
     protected Widget() {
         createState();
+        createBoxFrame();
     }
-
-    public static WidgetAuxiliaryFunctions aux = new WidgetAuxiliaryFunctions();
 }

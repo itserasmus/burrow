@@ -32,6 +32,14 @@ public class PaintData {
         return this;
     }
 
+    public PaintData setAccum(double x, double y, BoxFrame frame) {
+        this.x = x + frame.relX;
+        this.y = y + frame.relY;
+        this.width = frame.width;
+        this.height = frame.height;
+        return this;
+    }
+
     public PaintData set(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
@@ -46,5 +54,13 @@ public class PaintData {
         this.width = width;
         this.height = height;
         this.canvas = canvas;
+    }
+
+    @Override
+    public String toString() {
+        return "x: " + x + ", y: " + y + ", width:" + width + ", height:" + height;
+    }
+    public String toShortString() {
+        return x + ", " + y + ", " + width + ", " + height;
     }
 }
