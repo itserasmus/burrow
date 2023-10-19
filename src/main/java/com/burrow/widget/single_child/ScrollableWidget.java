@@ -10,20 +10,20 @@ import com.burrow.event_handling.event.BScrollEvent;
 import com.burrow.event_handling.listener.BScrollListener;
 import com.burrow.widget.State;
 import com.burrow.widget.Widget;
-import com.burrow.widget.single_child.canvas.CanvasWidget;
+import com.burrow.widget.single_child.canvas.BCanvas;
 import com.burrow.widget.single_child.canvas.stroke.CropStroke;
 
 @SuppressWarnings("rawtypes")
 public final class ScrollableWidget extends SingleChildWidget {
     protected ScrollableWidgetState state;
-    protected CanvasWidget parentCanvas;
+    protected BCanvas parentCanvas;
     protected BoxFrame frame;
 
     @Override
     public void layout(LayoutData data) {
         frame.setSize(data.maxWidth, data.maxHeight);
         child.layout(data.setMaxHeight(Double.MAX_VALUE));
-        child.getBoxFrame().setPos(0, state.scroll);
+        child.getBoxFrame().setPos(0, -state.scroll);
     }
     @Override
     public void paint(PaintData data) {
@@ -61,16 +61,16 @@ public final class ScrollableWidget extends SingleChildWidget {
         ) {
             return true; 
         }
-        // if(
-        //     (state.scroll > 0 && e.scroll > 0) ||
-        //     (state.scroll < child.getBoxFrame().height - frame.height && e.scroll < 0)
-        // ) {
+        if(
+            state.scroll + e.scroll < child.getBoxFrame().height - frame.height &&
+            state.scroll + e.scroll > 0
+        ) {
             System.out.println(child.getBoxFrame().height);
-            state.scroll = Math.max(0, Math.min(state.scroll - e.scroll, child.getBoxFrame().height - frame.height));
+            state.scroll = state.scroll + e.scroll;
             parentCanvas.requestRepaint();
             return true;
-        // }
-        // return false;
+        }
+        return false;
     }
 
     @Override

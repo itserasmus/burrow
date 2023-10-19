@@ -1,9 +1,8 @@
 package com.burrow.widget.single_child.canvas.stroke;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-
+import com.burrow.auxiliary.BufferedImageRasterizeData;
 import com.burrow.auxiliary.BurrowConstants;
+import com.burrow.auxiliary.Graphics2DRasterizeData;
 import com.burrow.auxiliary.PaintData;
 
 public final class CropStroke implements BStroke {
@@ -25,18 +24,18 @@ public final class CropStroke implements BStroke {
     }
 
     @Override
-    public void rasterizeToBufferedImage(BufferedImage image, BRenderFilter filter) {
-        filter.pushCropBounds(hitbox);
+    public void rasterizeToBufferedImage(BufferedImageRasterizeData data) {
+        data.filter.pushCropBounds(hitbox);
     }
 
     @Override
-    public void rasterizeToGraphics2D(Graphics2D g, BRenderFilter filter) {
-        filter.pushCropBounds(hitbox);
-        g.setClip(
-            (int)filter.getCropBounds()[0],
-            (int)filter.getCropBounds()[1],
-            (int)filter.getCropBounds()[2],
-            (int)filter.getCropBounds()[3]
+    public void rasterizeToGraphics2D(Graphics2DRasterizeData data) {
+        data.filter.pushCropBounds(hitbox);
+        data.g.setClip(
+            (int)data.filter.getCropBounds()[0],
+            (int)data.filter.getCropBounds()[1],
+            (int)data.filter.getCropBounds()[2],
+            (int)data.filter.getCropBounds()[3]
         );
     }
     
@@ -62,18 +61,18 @@ public final class CropStroke implements BStroke {
         }
 
         @Override
-        public void rasterizeToBufferedImage(BufferedImage image, BRenderFilter filter) {
-            filter.popCropBounds();
+        public void rasterizeToBufferedImage(BufferedImageRasterizeData data) {
+            data.filter.popCropBounds();
         }
 
         @Override
-        public void rasterizeToGraphics2D(Graphics2D g, BRenderFilter filter) {
-            filter.popCropBounds();
-            g.setClip(
-                (int)filter.getCropBounds()[0],
-                (int)filter.getCropBounds()[1],
-                (int)filter.getCropBounds()[2],
-                (int)filter.getCropBounds()[3]
+        public void rasterizeToGraphics2D(Graphics2DRasterizeData data) {
+            data.filter.popCropBounds();
+            data.g.setClip(
+                (int)data.filter.getCropBounds()[0],
+                (int)data.filter.getCropBounds()[1],
+                (int)data.filter.getCropBounds()[2],
+                (int)data.filter.getCropBounds()[3]
             );
         }
         

@@ -5,10 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import com.burrow.auxiliary.Graphics2DRasterizeData;
 import com.burrow.auxiliary.ScreenData;
 import com.burrow.widget.root.RootWidget;
 import com.burrow.widget.single_child.canvas.stroke.BRenderFilter;
@@ -20,11 +20,8 @@ public class BPanel extends JPanel implements Runnable {
     protected Thread frameThread;
     protected long lastFrame;
     public int fps = 10;
-    
-    BufferedImage image;
 
     protected boolean paintLock = true;
-    protected int[][] cArr;
 
     public BFrame getBFrame() {
         return frame;
@@ -32,9 +29,7 @@ public class BPanel extends JPanel implements Runnable {
     public void initialize(BFrame frame, RootWidget root) {
         this.frame = frame;
         this.root = root;
-        image = new BufferedImage(Math.max(1, getWidth()), Math.max(1, getHeight()), BufferedImage.TYPE_INT_ARGB);
-        cArr = new int[getWidth()][getHeight()];
-
+        
         root.init(
             this,
             new ScreenData(
@@ -51,8 +46,6 @@ public class BPanel extends JPanel implements Runnable {
         
         addComponentListener(new ComponentAdapter() {  
             public void componentResized(ComponentEvent e) {
-                image = new BufferedImage(Math.max(1, getWidth()), Math.max(1, getHeight()), BufferedImage.TYPE_INT_ARGB);
-                cArr = new int[getWidth()][getHeight()];
                 root.onResize(Math.max(1, getWidth()), Math.max(1, getHeight()));
             }
         });
@@ -77,12 +70,12 @@ public class BPanel extends JPanel implements Runnable {
             
             
             repaint();
-            lastFrame = System.nanoTime();
         }
     }
 
     @Override
     public void paintComponent(Graphics g) {
+        lastFrame = System.nanoTime();
         if(paintLock) {return;}
         long time = System.nanoTime();
         
@@ -91,20 +84,15 @@ public class BPanel extends JPanel implements Runnable {
         root.layout(getWidth(), getHeight());
         root.paint();
         
-        // int height = image.getHeight();
-        BRenderFilter filter = new BRenderFilter(this, new double[]{0, 0, image.getWidth(), image.getHeight()});
         
-        root.rasterizeToGraphics2D((Graphics2D)g, filter);
-        // root.rasterizeToCArr(cArr, filter);
+        BRenderFilter filter = new BRenderFilter(
+            this,
+            new double[]{0, 0, getWidth(), getHeight()},
+            new double[]{0, 0}
+        );
         
-        // for(int i = 0; i < image.getWidth(); i++) {
-        //     for(int j = 0; j < height; j++) {
-        //         // image.setRGB(i, j, root.pixelColor(i, j, filter.reset()));
-        //         image.setRGB(i, j, cArr[i][j]);
-        //     }
-        // }
-
-        g.drawImage(image, 0, 0, null);
+        root.rasterizeToGraphics2D(new Graphics2DRasterizeData((Graphics2D)g, filter, 5));
+        
         paintLock = false;
         System.out.println(((int)(System.nanoTime() - time) * 0.000001));
     }

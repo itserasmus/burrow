@@ -59,4 +59,11 @@ public class BoxFrame {
     public String toShortString() {
         return relX + ", " + relY + ", " + width + ", " + height;
     }
+
+    public double[] toDoubleArray() {
+        return new double[] {relX, relY, width, height};
+    }
+    public double[] toPositionDoubleArray() {
+        return new double[] {relX, relY};
+    }
 }

@@ -1,10 +1,10 @@
 package com.burrow.widget.single_child.canvas.stroke;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 
+import com.burrow.auxiliary.BufferedImageRasterizeData;
 import com.burrow.auxiliary.BurrowAux;
+import com.burrow.auxiliary.Graphics2DRasterizeData;
 
 public final class RectangleStroke implements BStroke {
     public final int x, y, width, height, color;
@@ -17,26 +17,6 @@ public final class RectangleStroke implements BStroke {
         }
         return 0;
     }
-
-    // @Override
-    // public void rasterizeToCArr(int[][] cArr, BRenderFilter filter) {
-    //     if(cArr.length == 0) {return;}
-    //     final int maxY = Math.min(
-    //         (int)(filter.getCropBounds()[1]+filter.getCropBounds()[3]),
-    //         Math.min(height + y, cArr[0].length)
-    //     );
-    //     final int maxX = Math.min(
-    //         (int)(filter.getCropBounds()[0]+filter.getCropBounds()[2]),
-    //         Math.min(width + x, cArr.length)
-    //     );
-    //     final int startX = Math.max((int)filter.getCropBounds()[0], Math.max(0, x));
-
-    //     for(int i = Math.max((int)filter.getCropBounds()[1], Math.max(0, y)); i < maxY; i++) {
-    //         for(int j = startX; j < maxX; j++) {
-    //             cArr[j][i] = color;
-    //         }
-    //     }
-    // }
 
     @Override
     public boolean drawStroke(double x, double y, double[] hitbox) {
@@ -61,36 +41,36 @@ public final class RectangleStroke implements BStroke {
     }
 
     @Override
-    public void rasterizeToBufferedImage(BufferedImage image, BRenderFilter filter) {
+    public void rasterizeToBufferedImage(BufferedImageRasterizeData data) {
         final int maxY = Math.min(
-            (int)(filter.getCropBounds()[1]+filter.getCropBounds()[3]),
-            Math.min(height + y, image.getHeight())
+            (int)(data.filter.getCropBounds()[1]+data.filter.getCropBounds()[3]),
+            Math.min(height + y, data.image.getHeight())
         );
         final int maxX = Math.min(
-            (int)(filter.getCropBounds()[0]+filter.getCropBounds()[2]),
-            Math.min(width + x, image.getWidth())
+            (int)(data.filter.getCropBounds()[0]+data.filter.getCropBounds()[2]),
+            Math.min(width + x, data.image.getWidth())
         );
-        final int startX = Math.max((int)filter.getCropBounds()[0], Math.max(0, x));
+        final int startX = Math.max((int)data.filter.getCropBounds()[0], Math.max(0, x));
 
-        for(int i = Math.max((int)filter.getCropBounds()[1], Math.max(0, y)); i < maxY; i++) {
+        for(int i = Math.max((int)data.filter.getCropBounds()[1], Math.max(0, y)); i < maxY; i++) {
             for(int j = startX; j < maxX; j++) {
-                image.setRGB(j, i, color);
+                data.image.setRGB(j, i, color);
             }
         }
     }
 
     @Override
-    public void rasterizeToGraphics2D(Graphics2D g, BRenderFilter filter) {
-        g.setColor(new Color(color));
-        g.fillRect(
-            Math.max((int)filter.getCropBounds()[0], Math.max(0, x)),
-            Math.max((int)filter.getCropBounds()[1], Math.max(0, y)),
+    public void rasterizeToGraphics2D(Graphics2DRasterizeData data) {
+        data.g.setColor(new Color(color));
+        data.g.fillRect(
+            Math.max((int)data.filter.getCropBounds()[0], Math.max(0, x)),
+            Math.max((int)data.filter.getCropBounds()[1], Math.max(0, y)),
             Math.min(
-                (int)filter.getCropBounds()[2],
+                (int)data.filter.getCropBounds()[2],
                 width
             ),
             Math.min(
-                (int)filter.getCropBounds()[3],
+                (int)data.filter.getCropBounds()[3],
                 height
             )
         );

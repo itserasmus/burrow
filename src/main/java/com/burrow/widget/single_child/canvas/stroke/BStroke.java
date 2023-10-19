@@ -1,11 +1,11 @@
 package com.burrow.widget.single_child.canvas.stroke;
 
-import java.awt.image.BufferedImage;
-import java.awt.Graphics2D;
+import com.burrow.auxiliary.BufferedImageRasterizeData;
+import com.burrow.auxiliary.Graphics2DRasterizeData;
 
 public interface BStroke {
     public int pixelColor(double x, double y, BRenderFilter filter);
-    public void rasterizeToBufferedImage(BufferedImage image, BRenderFilter filter);
-    public void rasterizeToGraphics2D(Graphics2D g, BRenderFilter filter);
+    public void rasterizeToBufferedImage(BufferedImageRasterizeData data);
+    public void rasterizeToGraphics2D(Graphics2DRasterizeData data);
     public boolean drawStroke(double x, double y, double[] hitbox);
 }

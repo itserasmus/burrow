@@ -1,11 +1,11 @@
 package com.burrow.auxiliary;
 
-import com.burrow.widget.single_child.canvas.CanvasWidget;
+import com.burrow.widget.single_child.canvas.BCanvas;
 
 public class PaintData {
     public double x, y;
     public double width, height;
-    public CanvasWidget canvas;
+    public BCanvas canvas;
 
     public PaintData setPos(double x, double y) {
         this.x = x;
@@ -19,7 +19,7 @@ public class PaintData {
         return this;
     }
 
-    public PaintData setCanvas(CanvasWidget canvas) {
+    public PaintData setCanvas(BCanvas canvas) {
         this.canvas = canvas;
         return this;
     }
@@ -48,7 +48,7 @@ public class PaintData {
         return this;
     }
 
-    public PaintData(double x, double y, double width, double height, CanvasWidget canvas) {
+    public PaintData(double x, double y, double width, double height, BCanvas canvas) {
         this.x = x;
         this.y = y;
         this.width = width;

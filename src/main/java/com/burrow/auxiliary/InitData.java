@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import com.burrow.widget.Widget;
 import com.burrow.widget.root.RootWidget;
-import com.burrow.widget.single_child.canvas.CanvasWidget;
+import com.burrow.widget.single_child.canvas.BCanvas;
 
 public class InitData {
     public ScreenData screen;
     public RootWidget root;
-    public CanvasWidget canvas;
+    public BCanvas canvas;
     public ArrayList<Widget> ancestors;
 
     public InitData setRoot(RootWidget root) {
@@ -17,7 +17,7 @@ public class InitData {
         return this;
     }
 
-    public InitData setCanvas(CanvasWidget canvas) {
+    public InitData setCanvas(BCanvas canvas) {
         this.canvas = canvas;
         return this;
     }

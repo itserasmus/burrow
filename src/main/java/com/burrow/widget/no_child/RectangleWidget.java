@@ -10,12 +10,12 @@ import com.burrow.event_handling.event.BMouseEvent;
 import com.burrow.event_handling.listener.BMouseListener;
 import com.burrow.widget.State;
 import com.burrow.widget.Widget;
-import com.burrow.widget.single_child.canvas.CanvasWidget;
+import com.burrow.widget.single_child.canvas.BCanvas;
 import com.burrow.widget.single_child.canvas.stroke.RectangleStroke;
 
 @SuppressWarnings("rawtypes")
 public final class RectangleWidget extends Widget implements BMouseListener {
-    protected CanvasWidget canvas;
+    protected BCanvas canvas;
     protected RectangleWidgetState state;
     
     @Override

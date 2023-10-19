@@ -4,16 +4,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
+import java.util.LinkedList;
 
 import com.burrow.auxiliary.ScreenData;
 import com.burrow.base.BPanel;
 import com.burrow.event_handling.event.BMouseEvent;
 import com.burrow.event_handling.event.BScrollEvent;
 import com.burrow.widget.Widget;
-import com.burrow.widget.single_child.canvas.CanvasWidget;
+import com.burrow.widget.single_child.canvas.SingleChildCanvasWidget;
 
-public abstract class RootWidget extends CanvasWidget implements MouseListener, MouseWheelListener {
+public abstract class RootWidget extends SingleChildCanvasWidget implements MouseListener, MouseWheelListener {
     public BPanel panel;
+    public LinkedList<BufferedImage> caches = new LinkedList<BufferedImage>();
 
     public abstract void init(BPanel panel, ScreenData screen);
     public abstract void layout(int width, int height);

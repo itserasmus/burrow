@@ -1,7 +1,6 @@
 package com.burrow.widget.root;
 
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -24,13 +23,15 @@ public final class BasicRootWidget extends RootWidget {
         state.frame.setSize(data.maxWidth, data.maxHeight);
         child.layout(data);
 
-        if(
-            (state.image.getWidth() == 0 && data.windowWidth != 0) ||
-            state.image.getWidth() != data.windowWidth ||
-            state.image.getHeight() != data.windowHeight
-        ) {
-            state.image = new BufferedImage(Math.max(1, data.windowWidth), Math.max(1, data.windowHeight), BufferedImage.TYPE_INT_ARGB);
-            resetCache();
+        if(state.cache != null) {
+            if(
+                (state.cache.getWidth() == 0 && state.frame.width != 0) ||
+                state.cache.getWidth() != state.frame.width ||
+                state.cache.getHeight() != state.frame.height
+            ) {
+                resetCache();
+                caches.clear();
+            }
         }
     }
 
@@ -43,13 +44,15 @@ public final class BasicRootWidget extends RootWidget {
             width, height
         ));
 
-        if(
-            (state.image.getWidth() == 0 && width != 0) ||
-            state.image.getWidth() != width ||
-            state.image.getHeight() != height
-        ) {
-            state.image = new BufferedImage(Math.max(1, width), Math.max(1, height), BufferedImage.TYPE_INT_ARGB);
-            resetCache();
+        if(state.cache != null) {
+            if(
+                (state.cache.getWidth() == 0 && width != 0) ||
+                state.cache.getWidth() != width ||
+                state.cache.getHeight() != height
+            ) {
+                resetCache();
+                caches.clear();
+            }
         }
     }
 
@@ -100,9 +103,9 @@ public final class BasicRootWidget extends RootWidget {
         }
 
         state.strokes = new ArrayList<BStroke>();
+        root = this;
 
         child.init(new InitData(this, screen));
-        state.image = new BufferedImage(Math.max(1, panel.getWidth()), Math.max(1, panel.getHeight()), BufferedImage.TYPE_INT_ARGB);
     }
     
     public BasicRootWidget(Widget child) {
@@ -115,7 +118,7 @@ public final class BasicRootWidget extends RootWidget {
         state.frame = new BoxFrame().setSize(width, height);
     }
 
-    public class BasicRootWidgetState extends CanvasState {
+    public class BasicRootWidgetState extends SingleChildCanvasWidgetState {
         public BasicRootWidgetState(BasicRootWidget widget) {
             super(widget);
         }

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import com.burrow.widget.Widget;
 import com.burrow.widget.root.RootWidget;
-import com.burrow.widget.single_child.canvas.CanvasWidget;
+import com.burrow.widget.single_child.canvas.BCanvas;
 
 public class TreeData {
     public RootWidget root;
-    public CanvasWidget canvas;
+    public BCanvas canvas;
     public ArrayList<Widget> ancestors;
 
     public TreeData setRoot(RootWidget root) {
@@ -16,7 +16,7 @@ public class TreeData {
         return this;
     }
 
-    public TreeData setCanvas(CanvasWidget canvas) {
+    public TreeData setCanvas(BCanvas canvas) {
         this.canvas = canvas;
         return this;
     }

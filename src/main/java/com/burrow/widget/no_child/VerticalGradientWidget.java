@@ -8,12 +8,12 @@ import com.burrow.auxiliary.TreeData;
 import com.burrow.auxiliary.BurrowAux;
 import com.burrow.widget.State;
 import com.burrow.widget.Widget;
-import com.burrow.widget.single_child.canvas.CanvasWidget;
+import com.burrow.widget.single_child.canvas.BCanvas;
 import com.burrow.widget.single_child.canvas.stroke.VerticalGradientStroke;
 
 @SuppressWarnings("rawtypes")
 public final class VerticalGradientWidget extends Widget {
-    protected CanvasWidget canvas;
+    protected BCanvas canvas;
     protected VerticalGradientWidgetState state;
     
     @Override

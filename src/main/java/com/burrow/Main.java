@@ -45,7 +45,6 @@ public class Main {
                                         new FixedSizeWidget(
                                             new ScrollableWidget(
                                                 new FixedSizeWidget(
-                                                    // new RectangleWidget(0xFF007F7F),
                                                     new VerticalGradientWidget(0xFFFF0000, 0xFF00FF00),
                                                     200, 600
                                                 )

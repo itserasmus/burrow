@@ -1,13 +1,14 @@
 package com.burrow.widget.single_child.canvas.stroke;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 
+import com.burrow.auxiliary.BufferedImageRasterizeData;
 import com.burrow.auxiliary.BurrowAux;
+import com.burrow.auxiliary.Graphics2DRasterizeData;
 
 public final class VerticalGradientStroke implements BStroke {
     public final int x, y, width, height, topColor, bottomColor;
+    public int color;
     public final double[] hitbox;
 
     @Override
@@ -47,34 +48,35 @@ public final class VerticalGradientStroke implements BStroke {
     }
 
     @Override
-    public void rasterizeToBufferedImage(BufferedImage image, BRenderFilter filter) {
+    public void rasterizeToBufferedImage(BufferedImageRasterizeData data) {
         final int maxY = Math.min(
-            (int)(filter.getCropBounds()[1]+filter.getCropBounds()[3]),
-            Math.min(height + y, image.getHeight())
+            (int)(data.filter.getCropBounds()[1]+data.filter.getCropBounds()[3]),
+            Math.min(height + y, data.image.getHeight())
         );
         final int maxX = Math.min(
-            (int)(filter.getCropBounds()[0]+filter.getCropBounds()[2]),
-            Math.min(width + x, image.getWidth())
+            (int)(data.filter.getCropBounds()[0]+data.filter.getCropBounds()[2]),
+            Math.min(width + x, data.image.getWidth())
         );
-        final int startX = Math.max((int)filter.getCropBounds()[0], Math.max(0, x));
+        final int startX = Math.max((int)data.filter.getCropBounds()[0], Math.max(0, x));
 
-        for(int i = Math.max((int)filter.getCropBounds()[1], Math.max(0, y)); i < maxY; i++) {
+        for(int i = Math.max((int)data.filter.getCropBounds()[1], Math.max(0, y)); i < maxY; i++) {
+            color = BurrowAux.lerpColor(topColor, bottomColor, (i-y)*1.0/height);
             for(int j = startX; j < maxX; j++) {
-                image.setRGB(j, i, BurrowAux.lerpColor(topColor, bottomColor, (i-y)*1.0/height));
+                data.image.setRGB(j, i, color);
             }
         }
     }
 
     @Override
-    public void rasterizeToGraphics2D(Graphics2D g, BRenderFilter filter) {
+    public void rasterizeToGraphics2D(Graphics2DRasterizeData data) {
         final int maxWidth = Math.min(
-            (int)filter.getCropBounds()[2],
+            (int)data.filter.getCropBounds()[2],
             width
         );
-        for(int i = Math.max((int)filter.getCropBounds()[1], Math.max(0, y)); i < Math.min((int)(filter.getCropBounds()[1]+filter.getCropBounds()[3]), height + y); i++) {
-            g.setColor(new Color(BurrowAux.lerpColor(topColor, bottomColor, (i-y)*1.0/height)));
-            g.fillRect(
-                Math.max((int)filter.getCropBounds()[0], Math.max(0, x)),
+        for(int i = Math.max((int)data.filter.getCropBounds()[1], Math.max(0, y)); i < Math.min((int)(data.filter.getCropBounds()[1]+data.filter.getCropBounds()[3]), height + y); i++) {
+            data.g.setColor(new Color(BurrowAux.lerpColor(topColor, bottomColor, (i-y)*1.0/height)));
+            data.g.fillRect(
+                Math.max((int)data.filter.getCropBounds()[0], Math.max(0, x)),
                 i,
                 maxWidth,
                 1
